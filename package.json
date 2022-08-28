@@ -3,6 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "16.15.1"
+  },
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js --ignore client",
