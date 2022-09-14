@@ -1,6 +1,8 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
+import moment from 'moment';
 import Survey from '../models/surveyModel.js';
+import User from '../models/userModel.js';
 import { isAuth, isAdmin, isAdminOrModerator } from '../utils.js';
 
 const surveyRouter = express.Router();
@@ -230,6 +232,61 @@ surveyRouter.get(
       page,
       pages: Math.ceil(countSurveys / pageSize),
     });
+  })
+);
+
+surveyRouter.get(
+  '/summary',
+  // isAuth,
+  // isAdmin,
+  expressAsyncHandler(async (req, res) => {
+
+    const previousMonth = moment()
+      .month(moment().month() - 1)
+      .set("date", 1)
+      .format("YYYY-MM-DD HH:mm:ss");
+    
+    const test = await User.aggregate([
+      {
+        $match: { createdAt: { $gte: new Date(previousMonth)}},
+      },
+      {
+        $project: {
+          month: { $month: "$createdAt"},
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum: 1},
+        },
+      },
+    ]);
+    const users = await User.aggregate([
+      {
+        $group: {
+          _id: null,
+          numUsers: { $sum: 1 },
+        },
+      },
+    ]);
+    const surveys = await Survey.aggregate([
+      {
+        $group: {
+          _id: null,
+          numSurveys: { $sum: 1 },
+        },
+      },
+    ]);
+    const surveyCategories = await Survey.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    res.send({ users, surveys, surveyCategories, test });
   })
 );
 
