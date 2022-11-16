@@ -83,6 +83,8 @@ userRouter.put(
       user.lastName = req.body.lastName || user.lastName;
       user.mobileNumber = req.body.mobileNumber || user.mobileNumber;
       user.email = req.body.email || user.email;
+      user.image = req.body.image || user.image;
+      user.images = req.body.images || user.images;
       if (req.body.password) {
         user.password = bcrypt.hashSync(req.body.password, 8);
       }
@@ -94,6 +96,8 @@ userRouter.put(
         lastName: updatedUser.lastName,
         mobileNumber: updatedUser.mobileNumber,
         email: updatedUser.email,
+        image: updatedUser.image,
+        images: updatedUser.images,
         isActive: updatedUser.isActive,
         isAdmin: updatedUser.isAdmin,
         isModerator: updatedUser.isModerator,
@@ -119,6 +123,8 @@ userRouter.post(
           lastName: user.lastName,
           mobileNumber: user.mobileNumber,
           email: user.email,
+          image: user.image,
+          images: user.images,
           isActive: user.isActive,
           isAdmin: user.isAdmin,
           isModerator: user.isModerator,
@@ -141,6 +147,7 @@ userRouter.post(
       lastName: req.body.lastName,
       mobileNumber: req.body.mobileNumber,
       email: req.body.email,
+      image: '/images/p1.jpg',
       password: bcrypt.hashSync(req.body.password),
     });
     const user = await newUser.save();
@@ -150,6 +157,7 @@ userRouter.post(
       lastName: user.lastName,
       mobileNumber: user.mobileNumber,
       email: user.email,
+      image: user.image,
       isActive: user.isActive,
       isAdmin: user.isAdmin,
       isModerator: user.isModerator,
@@ -185,6 +193,8 @@ userRouter.put(
       user.lastName = req.body.lastName || user.lastName;
       user.mobileNumber = req.body.mobileNumber || user.mobileNumber;
       user.email = req.body.email || user.email;
+      user.image = req.body.image || user.image;
+      user.images = req.body.images || user.images;
       user.isActive = Boolean(req.body.isActive);
       user.isAdmin = Boolean(req.body.isAdmin);
       user.isModerator = Boolean(req.body.isModerator);

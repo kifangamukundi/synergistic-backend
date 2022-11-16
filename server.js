@@ -72,4 +72,4 @@ app.listen(port, () => {
   console.log(`serve at http://localhost:${port}`);
 });
 
-// gcloud functions deploy ENVIRONMENT_VARIABLES --env-vars-file .env.yaml FLAGS...
+// http://localhost:5000/api/seed

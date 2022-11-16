@@ -7,6 +7,7 @@ const data = {
       lastName: 'Mukundi',
       mobileNumber: '0702817040',
       email: 'mukundikifanga@gmail.com',
+      image: '/images/p1.jpg',
       password: bcrypt.hashSync('64GB1995'),
       isActive: true,
       isAdmin: true,
