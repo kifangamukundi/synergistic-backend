@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import expressAsyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import { isAuth, isAdmin, isAdminOrModerator, generateToken } from '../utils.js';
+import { signInRules, signUpRules, validate } from '../validators/userValidators.js';
 
 const userRouter = express.Router();
 
@@ -113,6 +114,8 @@ userRouter.put(
 
 userRouter.post(
   '/signin',
+  signInRules(),
+  validate,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -135,36 +138,39 @@ userRouter.post(
         return;
       }
     }
-    res.status(401).send({ message: 'Invalid email or password' });
+    res.status(401).send({ message: ['Invalid password'] });
   })
 );
 
 userRouter.post(
   '/signup',
+  signUpRules(),
+  validate,
   expressAsyncHandler(async (req, res) => {
-    const newUser = new User({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      mobileNumber: req.body.mobileNumber,
-      email: req.body.email,
-      image: '/images/p1.jpg',
-      password: bcrypt.hashSync(req.body.password),
-    });
-    const user = await newUser.save();
-    res.send({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      mobileNumber: user.mobileNumber,
-      email: user.email,
-      image: user.image,
-      isActive: user.isActive,
-      isAdmin: user.isAdmin,
-      isModerator: user.isModerator,
-      isFieldAgent: user.isFieldAgent,
-      isFarmer: user.isFarmer,
-      token: generateToken(user),
-    });
+      const newUser = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        mobileNumber: req.body.mobileNumber,
+        email: req.body.email,
+        image: '/images/p1.jpg',
+        password: bcrypt.hashSync(req.body.password),
+      });
+      const user = await newUser.save();
+      res.send({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        mobileNumber: user.mobileNumber,
+        email: user.email,
+        image: user.image,
+        isActive: user.isActive,
+        isAdmin: user.isAdmin,
+        isModerator: user.isModerator,
+        isFieldAgent: user.isFieldAgent,
+        isFarmer: user.isFarmer,
+        token: generateToken(user),
+      });
+    
   })
 );
 
