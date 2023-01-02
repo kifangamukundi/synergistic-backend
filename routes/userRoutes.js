@@ -152,7 +152,7 @@ userRouter.post(
         lastName: req.body.lastName,
         mobileNumber: req.body.mobileNumber,
         email: req.body.email,
-        image: '/images/p1.jpg',
+        image: '/images/avator.jpg',
         password: bcrypt.hashSync(req.body.password),
       });
       const user = await newUser.save();

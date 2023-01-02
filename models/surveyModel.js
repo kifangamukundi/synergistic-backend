@@ -14,6 +14,7 @@ const surveySchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
+    image: { type: String, required: true },
     surveyJson: { type: Object, required: true },
     slug: { type: String, required: true, unique: true },
     isActive: { type: Boolean, default: true, required: true },

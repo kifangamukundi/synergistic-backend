@@ -24,6 +24,7 @@ surveyRouter.post(
       category: 'farmer',
       numResponses: 0,
       description: 'survey description',
+      image: '/images/survey.jpg',
       surveyJson: {
         "title": "Test Title",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam sem orci, eu dictum ante mollis quis. Pellentesque id tortor ullamcorper, fermentum leo in, lacinia ante. Etiam condimentum, urna ut eleifend iaculis, mauris velit laoreet nunc, ornare efficitur ligula quam at sapien. Vestibulum laoreet, magna vehicula ultrices euismod, nunc sapien egestas purus, non faucibus ex sem eget dui. Phasellus euismod augue magna, ullamcorper tempus velit semper id.",
@@ -90,6 +91,7 @@ surveyRouter.put(
       survey.isActive = req.body.isActive;
       survey.category = req.body.category;
       survey.description = req.body.description;
+      survey.image = req.body.image;
       survey.surveyJson = req.body.surveyJson;
       await survey.save();
       res.send({ message: 'Survey Updated' });
@@ -145,7 +147,7 @@ surveyRouter.post(
   })
 );
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 12;
 
 surveyRouter.get(
   '/admin',
