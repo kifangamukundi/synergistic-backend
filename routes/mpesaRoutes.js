@@ -144,7 +144,8 @@ const getAccessToken = async (req, res, next) => {
     const password = new Buffer.from(shortCode + passkey + timestamp).toString(
       "base64"
     );
-  
+    
+    const token = req.token;
     await axios
   
       .post(
