@@ -9,6 +9,7 @@ import productRouter from './routes/productRoutes.js';
 import surveyRouter from './routes/surveyRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
+import mpesaRouter from './routes/mpesaRoutes.js';
 import uploadRouter from './routes/uploadRoutes.js';
 
 dotenv.config();
@@ -56,12 +57,13 @@ app.use('/api/products', productRouter);
 app.use('/api/surveys', surveyRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/payments', mpesaRouter);
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, '/frontend/build')));
-app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
-);
+// const __dirname = path.resolve();
+// app.use(express.static(path.join(__dirname, '/frontend/build')));
+// app.get('*', (req, res) =>
+//   res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
+// );
 
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
