@@ -120,7 +120,7 @@ const getAccessToken = async (req, res, next) => {
     transaction
       .save()
       .then((data) => {
-        console.log({ message: "transaction saved successfully", data });
+        res.send({ message: "transaction saved successfully", data });
       })
       .catch((err) => console.log(err.message));
   
