@@ -12,25 +12,21 @@ const getAccessToken = async (req, res, next) => {
     const secret = process.env.MPESA_CONSUMER_SECRET;
     const auth = new Buffer.from(`${key}:${secret}`).toString("base64");
   
-    await axios
-      .get(
+    try {
+      const result = await axios.get(
         "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
         {
           headers: {
             authorization: `Basic ${auth}`,
           },
         }
-      )
-      .then((res) => {
-        //   resp.status(200).json(res.data);
-        // token = res.data.access_token;
-        req.token = res.data.access_token;
-        console.log(req.token);
-        next();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      );
+    
+    req.token = result.data.access_token;
+    next();
+    } catch (err) {
+      return res.status(401).send({ error: err.message });
+    }
   };
   
   //STEP 2 //stk push
@@ -56,8 +52,9 @@ const getAccessToken = async (req, res, next) => {
     );
     
     const token = req.token;
-    await axios
-      .post(
+
+    try {
+      const result = await axios.post(
         "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
         {
           BusinessShortCode: shortCode,
@@ -77,21 +74,19 @@ const getAccessToken = async (req, res, next) => {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((resp) => {
-        res.json(resp.data);
-        const data = resp.data;
-        console.log(resp.data);
-      })
-      .catch((err) => {
-        res.json(err);
-        console.log(err.message);
-      });
+      );
+    
+    res.json(result.data);
+      
+    } catch (err) {
+      return res.status(401).send({ error: err.message });
+    }
+      
   }));
   
   //STEP 3 callback url
   const callback_route = process.env.CALLBACK_ROUTE;
-  mpesaRouter.post(`/${callback_route}`, (req, res) => {
+  mpesaRouter.post(`/${callback_route}`, expressAsyncHandler(async(req, res) => {
     if (!req.body.Body.stkCallback.CallbackMetadata) {
       console.log(req.body.Body.stkCallback.ResultDesc);
       res.status(200).json("ok");
@@ -105,27 +100,21 @@ const getAccessToken = async (req, res, next) => {
         3
       );
     const phone = `0${phone1}`;
-    // saving the transaction to db
-    console.log({
-      phone,
-      code,
-      amount,
-    });
-    const transaction = new Transaction();
-  
-    transaction.customer_number = phone;
-    transaction.mpesa_ref = code;
-    transaction.amount = amount;
-  
-    transaction
-      .save()
-      .then((data) => {
-        res.send({ message: "transaction saved successfully", data });
-      })
-      .catch((err) => console.log(err.message));
+
+    try {
+     const transaction = new Transaction({
+      customer_number: phone,
+      mpesa_ref: code,
+      amount: amount
+     });
+    const payment = await transaction.save();
+    res.send({ message: 'Payment Proceeded', payment });
+    } catch (err) {
+      return res.status(401).send({ error: err.message });
+    }
   
     res.status(200).json("ok");
-  });
+  }));
   
   mpesaRouter.post("/stkpushquery", getAccessToken, expressAsyncHandler(async (req, res) => {
     const CheckoutRequestID = req.body.CheckoutRequestID;
@@ -146,29 +135,26 @@ const getAccessToken = async (req, res, next) => {
     );
     
     const token = req.token;
-    await axios
-  
-      .post(
-        "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
-        {
-          BusinessShortCode: shortCode,
-          Password: password,
-          Timestamp: timestamp,
-          CheckoutRequestID: CheckoutRequestID,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+
+      try {
+        const result = await axios.post(
+          "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
+          {
+            BusinessShortCode: shortCode,
+            Password: password,
+            Timestamp: timestamp,
+            CheckoutRequestID: CheckoutRequestID,
           },
-        }
-      )
-      .then((responce) => {
-        res.status(200).json(responce.data);
-      })
-      .catch((err) => {
-        console.log(err.message);
-        res.status(400).json(err);
-      });
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        res.status(200).json(result.data);
+      } catch (err) {
+        return res.status(400).send({ error: err.message });
+      }
   }));
   
   mpesaRouter.get("/transactions", (req, res) => {
