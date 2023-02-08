@@ -3,12 +3,10 @@ import path from 'path';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import seedRouter from './routes/seedRoutes.js';
-import productRouter from './routes/productRoutes.js';
 
 // New staff
 import surveyRouter from './routes/surveyRoutes.js';
 import userRouter from './routes/userRoutes.js';
-import orderRouter from './routes/orderRoutes.js';
 import mpesaRouter from './routes/mpesaRoutes.js';
 import uploadRouter from './routes/uploadRoutes.js';
 
@@ -51,12 +49,10 @@ app.get('/api/keys/google', (req, res) => {
 
 app.use('/api/upload', uploadRouter);
 app.use('/api/seed', seedRouter);
-app.use('/api/products', productRouter);
 
 // new staff
 app.use('/api/surveys', surveyRouter);
 app.use('/api/users', userRouter);
-app.use('/api/orders', orderRouter);
 app.use('/api/payments', mpesaRouter);
 
 // const __dirname = path.resolve();
